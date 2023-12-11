@@ -3,6 +3,7 @@
 /* eslint no-use-before-define: 0 */
 
 const path = require('path');
+const fs = require('fs');
 
 const _ = require('lodash');
 const BbPromise = require('bluebird');
@@ -10,6 +11,12 @@ const { validateEventsProperty } = require('../../shared/validate');
 
 module.exports = {
   compileFunctions() {
+    const functions = { resources: [] };
+    const fileToLoad=path.join(
+      this.serverless.config.servicePath,
+      '.serverless',
+      'functions_to_deploy.json'
+    );
     const artifactFilePath = this.serverless.service.package.artifact;
     const fileName = artifactFilePath.split(path.sep).pop();
     const projectName = _.get(this, 'serverless.service.provider.project');
@@ -47,10 +54,6 @@ module.exports = {
       funcTemplate.properties.runtime = this.provider.getRuntime(funcObject);
       funcTemplate.properties.timeout =
         _.get(funcObject, 'timeout') || _.get(this, 'serverless.service.provider.timeout') || '60s';
-      funcTemplate.properties.environmentVariables =
-        this.provider.getConfiguredEnvironment(funcObject);
-      funcTemplate.properties.secretEnvironmentVariables =
-        this.provider.getConfiguredSecrets(funcObject);
 
       if (!funcTemplate.properties.serviceAccountEmail) {
         delete funcTemplate.properties.serviceAccountEmail;
@@ -77,13 +80,6 @@ module.exports = {
 
       if (funcObject.minInstances) {
         funcTemplate.properties.minInstances = funcObject.minInstances;
-      }
-
-      if (!_.size(funcTemplate.properties.environmentVariables)) {
-        delete funcTemplate.properties.environmentVariables;
-      }
-      if (!_.size(funcTemplate.properties.secretEnvironmentVariables)) {
-        delete funcTemplate.properties.secretEnvironmentVariables;
       }
 
       funcTemplate.properties.labels = _.assign(
@@ -117,8 +113,10 @@ module.exports = {
         }
       }
 
+      functions.resources.push(funcTemplate);
       this.serverless.service.provider.compiledConfigurationTemplate.resources.push(funcTemplate);
     });
+    fs.writeFileSync(fileToLoad, JSON.stringify(functions));
 
     return BbPromise.resolve();
   },

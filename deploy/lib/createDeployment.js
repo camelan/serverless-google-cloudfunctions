@@ -55,9 +55,7 @@ module.exports = {
         },
       },
     };
-
-    return this.provider
-      .request('deploymentmanager', 'deployments', 'insert', params)
-      .then(() => this.monitorDeployment(deploymentName, 'create', 5000));
+    
+    return;
   },
 };
