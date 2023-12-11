@@ -12,7 +12,7 @@ const { validateEventsProperty } = require('../../shared/validate');
 module.exports = {
   compileFunctions() {
     const functions = { resources: [] };
-    const fileToLoad=path.join(
+    const fileToLoad = path.join(
       this.serverless.config.servicePath,
       '.serverless',
       'functions_to_deploy.json'
@@ -113,6 +113,8 @@ module.exports = {
         }
       }
 
+      funcTemplate.properties.allow_unauthenticated = funcObject.allow_unauthenticated;
+      
       functions.resources.push(funcTemplate);
       this.serverless.service.provider.compiledConfigurationTemplate.resources.push(funcTemplate);
     });
@@ -176,6 +178,7 @@ const getFunctionTemplate = (funcObject, projectName, region, sourceArchiveUrl) 
       availableMemoryMb: 256,
       runtime: 'nodejs10',
       timeout: '60s',
+      allow_unauthenticated: funcObject?.allow_unauthenticated || false,
       entryPoint: funcObject.handler,
       function: funcObject.name,
       sourceArchiveUrl,

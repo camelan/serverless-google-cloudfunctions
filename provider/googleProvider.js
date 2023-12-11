@@ -157,6 +157,7 @@ class GoogleProvider {
           serviceAccountEmail: { type: 'string' }, // Override provider configuration
           memorySize: { $ref: '#/definitions/cloudFunctionMemory' }, // Override provider configuration
           timeout: { type: 'string' }, // Override provider configuration
+          allow_unauthenticated: { type: 'boolean' }, // Override provider configuration
           minInstances: { type: 'number' },
           environment: { $ref: '#/definitions/cloudFunctionEnvironmentVariables' }, // Override provider configuration
           secrets: { $ref: '#/definitions/cloudFunctionSecretEnvironmentVariables' }, // Can be overridden by function configuration
