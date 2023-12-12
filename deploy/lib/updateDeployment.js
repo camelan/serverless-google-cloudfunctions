@@ -51,9 +51,7 @@ module.exports = {
         },
       },
     };
-
-    return this.provider
-      .request('deploymentmanager', 'deployments', 'update', params)
-      .then(() => this.monitorDeployment(deploymentName, 'update', 5000));
+    
+    return;
   },
 };
